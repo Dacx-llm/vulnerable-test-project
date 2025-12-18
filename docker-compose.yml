@@ -1,0 +1,37 @@
+# Vulnerable Docker Compose - FOR SECURITY TESTING ONLY
+
+version: '3.8'
+
+services:
+  app:
+    build: .
+    privileged: true
+    ports:
+      - "0.0.0.0:8080:8080"
+      - "0.0.0.0:22:22"
+    environment:
+      - DATABASE_PASSWORD=supersecret123
+      - API_KEY=sk-1234567890abcdef
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+    volumes:
+      - /:/host:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: host
+    cap_add:
+      - ALL
+    security_opt:
+      - seccomp:unconfined
+    user: "0:0"
+
+  database:
+    image: mysql:latest
+    ports:
+      - "0.0.0.0:3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=password123
+
+  redis:
+    image: redis:latest
+    ports:
+      - "0.0.0.0:6379:6379"
